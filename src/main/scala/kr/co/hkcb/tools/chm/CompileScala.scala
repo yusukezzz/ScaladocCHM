@@ -1,10 +1,17 @@
 package kr.co.hkcb.tools.chm
 
-import java.io._
+import java.io.{File, FileWriter}
 import java.nio.charset.CodingErrorAction
 import java.util.regex.Pattern
+import scala.language.postfixOps
 
 object CompileScala {
+  def getTocDirectories(base: File): List[File] =
+    for(
+      file <- base.listFiles.toList
+      if file.isDirectory
+      if !List("index", "lib").contains(file.getName)
+    ) yield file
 
   def main(args: Array[String]) {
 
@@ -86,12 +93,10 @@ object CompileScala {
       }
 
       val file = new FileWriter(tocFile)
-
       file.write("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n" +
         "<HTML>\n<HEAD>\n<!-- Sitemap 1.0 -->\n</HEAD><BODY>\n")
-
       file.write("<UL>\n")
-      file.write(list(new File(apiDir + "/scala")))
+      getTocDirectories(new File(apiDir)).foreach(f => file.write(list(f)))
       file.write("</UL>\n")
       file.write("</BODY></HTML>")
       file.close
