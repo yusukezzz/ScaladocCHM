@@ -20,20 +20,20 @@ object CompileScala {
     val apiRoot = "docs"
     val indexPage = "index.html"
 
-    val hhpFile = apiVersion + ".hhp"
-    val tocFile = apiVersion + ".hhc"
-    val indexFile = apiVersion + ".hhk"
+    val hhpFile = apiVersion +".hhp"
+    val tocFile = apiVersion +".hhc"
+    val indexFile = apiVersion +".hhk"
 
-    val apiDir = apiRoot + "/" + apiVersion
+    val apiDir = apiRoot +"/"+ apiVersion
     val tmpDir = "_modified"
 
     val caption = apiVersion
-    val defaultFile = apiDir + tmpDir + "/" + indexPage
-    val homePage = apiDir + tmpDir + "/" + indexPage
+    val defaultFile = apiDir + tmpDir +"/"+ indexPage
+    val homePage = apiDir + tmpDir +"/"+ indexPage
     val language = "0x409 English (United States)"
     val etcSettings = "0x61520,,0x104e,[0,0,800,600],,,,,,,0"
 
-    val hhcTool = System.getenv("ProgramFiles") + "/HTML Help Workshop/hhc.exe"
+    val hhcTool = System.getenv("ProgramFiles") +"/HTML Help Workshop/hhc.exe"
 
     /**
      * table of contents
@@ -45,8 +45,7 @@ object CompileScala {
       def list(path: File): String = {
         var html = ""
         for (file <- path.listFiles) {
-
-          var title = file.toString
+          val title = file.getName
             .replace(apiRoot + "\\", "")
             .replace(apiVersion + "\\", "")
             .replace("\\", ".")
@@ -55,16 +54,12 @@ object CompileScala {
             .replace("$eq", "=")
             .replace("$colon", ":")
             .replace("$plus", "+")
-
-          var pageImage = 11
-
-          if (title.contains("$")) {
-            pageImage = 12
-          }
-
-          title = title
+            .replace("$tilde", "~")
+            .replace("$less", "<")
             .replaceAll("\\$\\$?", ".")
             .replaceAll("\\.$", "")
+
+          val pageImage = if (title.contains("$")) 12 else 11
 
           val local = file.toURI.toString
             .replaceAll("^.*" + getCurrentDirectoryName + "/", "")
@@ -78,7 +73,6 @@ object CompileScala {
               "</OBJECT>" +
               "</LI>\n" +
               "<UL>\n" + list(file) + "</UL>\n"
-
           } else if (!local.contains(indexPage)) {
             html += "<LI>" +
               "<OBJECT type=\"text/sitemap\">\n" +
@@ -91,6 +85,7 @@ object CompileScala {
         }
         html
       }
+
 
       val file = new FileWriter(tocFile)
       file.write("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n" +
